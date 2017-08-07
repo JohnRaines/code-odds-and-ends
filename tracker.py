@@ -5,7 +5,7 @@ from collections import deque
 import math
 
 '''
-inecusable number of global variables
+inecusable number of global variables X
 '''
 cap = cv2.VideoCapture(1)
 d = deque()
