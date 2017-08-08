@@ -29,6 +29,8 @@ SLOPE = 0
 NSLOPE = 0
 XDIS = 1
 YDIS = 1
+CENTERX = 0
+CENTERY = 0
 TEMP1 = 0
 TEMP2 = 0
 
@@ -71,9 +73,10 @@ def kfinder():
         global K
         K =(SIDE / (math.sqrt(1 + NSLOPE**2)))
 
+
 #finds all the points of the square
 def squarefinder():
-        global Xa, Ya, Xb, Yb
+        global Xa, Ya, Xb, Yb, CENTERX, CENTERY
         slopefinder()
         sidefinder()
         kfinder()
@@ -81,11 +84,15 @@ def squarefinder():
         Ya = Y1 - abs(K * NSLOPE)
         Xb = X2 + K * np.sign(SLOPE)
         Yb = Y2 - abs(K * NSLOPE)
+        CENTERX = ((X1 + X2) / 2) + K * np.sign(SLOPE)/2
+        CENTERY = ((Y1 + Y2) / 2) - abs(K * NSLOPE)/2
 
         cv2.line(frame, (int(X1),int(Y1)), (int(X2),int(Y2)), (0, 0, 255), 5)
         cv2.line(frame, (int(X1),int(Y1)), (int(Xa),int(Ya)), (0, 0, 255), 5)
         cv2.line(frame, (int(Xb),int(Yb)), (int(X2),int(Y2)), (0, 0, 255), 5)
-        cv2.line(frame, (int(Xa),int(Ya)), (int(Xb),int(Yb)), (0, 0, 255), 5)        
+        cv2.line(frame, (int(Xa),int(Ya)), (int(Xb),int(Yb)), (0, 0, 255), 5)
+        cv2.circle(frame, (int(CENTERX), int(CENTERY)), int(1),(0, 255, 0), 2)
+        
 
 
 #set our upper and lower color values
