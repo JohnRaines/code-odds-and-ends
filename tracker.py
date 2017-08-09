@@ -7,32 +7,30 @@ import math
 '''
 inecusable number of global variables X
 '''
-cap = cv2.VideoCapture(1)
-d = deque()
+cap = cv2.VideoCapture(0) #video signal
+d = deque()               #3 deques for storing positions of all objects
 d2 = deque()
 d3 = deque()
-X1 = 1
+X1 = 1                    #X1Y1 Green object
 Y1 = 1
-X2 = 2
+X2 = 2                    #X2Y2 blue object
 Y2 = 2
-X3 = 3
+X3 = 3                    #X3Y3 purple object
 Y3 = 3
-Xa = 0
+Xa = 0                    #a and b sets are the derived corners of the square
 Ya = 0
 Xb = 0
 Yb = 0
-K = 0
-XVEL = 0 
-YVEL = 0
-SIDE = 0
-SLOPE = 0
-NSLOPE = 0
-XDIS = 1
+K = 0                     #k is a constant used to determine corners
+SIDE = 0                  #Length of a side of the square
+SLOPE = 0                 #slope of the line defined by the blue and green points
+NSLOPE = 0                #slope normal to SLOPE
+XDIS = 1                  #X and Y disstance from the top and sides 
 YDIS = 1
-CENTERX = 0
+CENTERX = 0               #X and Y coordinates for center of the square
 CENTERY = 0
-TEMP1 = 0
-TEMP2 = 0
+ERRORX = 0
+ERRORY = 0
 
 
 '''
@@ -51,6 +49,13 @@ def distance(xa, ya, xb, yb, xi, yi):
         numer = ((y2-y1)*x3)-((x2-x1)*y3)+(x2*y1)-(y2*x1)
         denom = ((y2-y1)**2) + ((x2-x1)**2)
         return ((abs(numer))/(math.sqrt(denom)))
+
+#Finds the x and y position error
+def errorfinder():
+        global ERRORX, ERRORY
+        ERRORX = X3 - CENTERX
+        ERRORY = Y3 - CENTERY
+        
 
 #finds the length of one side of the square
 def sidefinder():
@@ -195,27 +200,10 @@ while(1):
         ########display coordinate and velocities
         text = str(int(X1)) + " " + str(int(Y1))
         text2 = str(int(XDIS)) + " " + str(int(YDIS))
-        #print(DIST)
-        #cv2.putText(frame,text,(0,100),cv2.FONT_HERSHEY_COMPLEX,1,(0,255,255),2)
         cv2.putText(frame,text2,(0,200),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),2)
-        #cv2.putText(frame,str(XVEL),(0,400),cv2.FONT_HERSHEY_COMPLEX,1,(0,255,255),2)
-        #cv2.putText(frame,str(YVEL),(0,450),cv2.FONT_HERSHEY_COMPLEX,1,(0,255,255),2)
         cv2.line(frame, (int(X1),int(Y1)), (int(X2),int(Y2)), (0, 0, 255), 5) #line connecting points
                 
-        '''
-        #trace line and get velocity
-        for i in range(1, len(d)):
-                if d[i-1] is None or d[i] is None:
-                        continue
-                ptA = d[i-1] #pull the points into holders
-                ptB= d[i]
-                cv2.line(frame, ptA, ptB, (0, 0, 255), 5) #line connecting points
-                XVEL = ptB[0] - ptA[0] #calculate X and Y velocity
-                YVEL = ptB[1] - ptA[1]
-                d.pop()
-        '''
-        
-	
+        	
         #displays
         cv2.imshow('original', frame)
         cv2.imshow('res', res)
