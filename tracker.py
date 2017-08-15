@@ -3,6 +3,7 @@ import numpy as np
 import array
 from collections import deque
 import math
+from PID import PID
 
 '''
 inecusable number of global variables X
@@ -39,22 +40,19 @@ Tonnes of functions
 #function for finding the distance from point 3 to the line created by points
 #1 and 2
 def distance(xa, ya, xb, yb, xi, yi):
-        x1 = xa
         y1 = -ya
-        x2 = xb
         y2 = -yb
-        x3 = xi
         y3 = -yi
         
-        numer = ((y2-y1)*x3)-((x2-x1)*y3)+(x2*y1)-(y2*x1)
-        denom = ((y2-y1)**2) + ((x2-x1)**2)
+        numer = ((y2-y1)*xi)-((xb-xa)*y3)+(xb*y1)-(y2*xa)
+        denom = ((y2-y1)**2) + ((xb-xa)**2)
         return ((abs(numer))/(math.sqrt(denom)))
 
 #Finds the x and y position error
 def errorfinder():
         global ERRORX, ERRORY
-        ERRORX = X3 - CENTERX
-        ERRORY = Y3 - CENTERY
+        ERRORX = CENTERX - X3
+        ERRORY = CENTERY - Y3
         
 
 #finds the length of one side of the square
@@ -91,15 +89,24 @@ def squarefinder():
         Yb = Y2 - abs(K * NSLOPE)
         CENTERX = ((X1 + X2) / 2) + K * np.sign(SLOPE)/2
         CENTERY = ((Y1 + Y2) / 2) - abs(K * NSLOPE)/2
+        #update goal points
 
         cv2.line(frame, (int(X1),int(Y1)), (int(X2),int(Y2)), (0, 0, 255), 5)
         cv2.line(frame, (int(X1),int(Y1)), (int(Xa),int(Ya)), (0, 0, 255), 5)
         cv2.line(frame, (int(Xb),int(Yb)), (int(X2),int(Y2)), (0, 0, 255), 5)
         cv2.line(frame, (int(Xa),int(Ya)), (int(Xb),int(Yb)), (0, 0, 255), 5)
         cv2.circle(frame, (int(CENTERX), int(CENTERY)), int(1),(0, 255, 0), 2)
-        
+
+#filter an image using input hsv values        
+def ColorFilter(picture, low, high):
+        mask = cv2.inRange(picture, low, high)
+        mask = cv2.erode(mask, None, iterations=3)
+        return cv2.dilate(mask, None, iterations=3)
 
 
+'''
+inits
+'''
 #set our upper and lower color values
 low_green = np.array([50,255,85])
 hi_green = np.array([75,255,255])
@@ -110,6 +117,12 @@ hi_blue = np.array([120,255,255])
 low_purp = np.array([150,255,85])
 hi_purp = np.array([200,255,255])
 
+#intialize pid
+pid = PID()
+pid.SetKp(1)
+pid.SetKd(1)
+pid.SetKi(1)
+pid.Initialize()
 
 '''
 "main"
@@ -125,24 +138,17 @@ while(1):
         H,S,V = cv2.split(hsv)
         S.fill(255)
         hsv = cv2.merge([H,S,V])
-        #hsv = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
         
-        #filter by green and smooth the image
-        mask = cv2.inRange(hsv, low_green, hi_green)
-        mask = cv2.erode(mask, None, iterations=3)
-        mask = cv2.dilate(mask, None, iterations=3)
+        #filter by green 
+        mask = ColorFilter(hsv, low_green, hi_green)
         res = cv2.bitwise_and(frame, frame, mask=mask)
 
-        #filter by blue colour and smooth
-        mask2 = cv2.inRange(hsv, low_blue, hi_blue)
-        mask2 = cv2.erode(mask2, None, iterations=3)
-        mask2 = cv2.dilate(mask2, None, iterations=3)
+        #filter by blue 
+        mask2 = ColorFilter(hsv, low_blue, hi_blue)
         res2 = cv2.bitwise_and(frame, frame, mask=mask2)
 
-        #filter by purple and smooth
-        mask3 = cv2.inRange(hsv, low_purp, hi_purp)
-        mask3 = cv2.erode(mask3, None, iterations=3)
-        mask3 = cv2.dilate(mask3, None, iterations=3)
+        #filter by purple 
+        mask3 = ColorFilter(hsv, low_purp, hi_purp)
         res3 = cv2.bitwise_and(frame, frame, mask=mask3)
 
 
