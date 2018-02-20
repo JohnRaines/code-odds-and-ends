@@ -15,6 +15,7 @@ import numpy as np
 from collections import deque
 
 ser = serial.Serial("COM6", 9600) #set up serial communication
+ser.write_timeout = 0
 s = [0]
 cap = cv2.VideoCapture(0)         #acquire video signal
 d =  deque()                      #holds the positions of the object
@@ -69,7 +70,7 @@ while(1):
     PUSHER = (X * 65536)  + Y
     PUSHER = int(PUSHER)
     #ser.write(1);
-    ser.write(X)
+    ser.write(str(X).encode())
     #ser.write(int(Y))
             
     #center display

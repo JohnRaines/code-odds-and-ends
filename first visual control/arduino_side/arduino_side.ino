@@ -22,28 +22,28 @@ void setup() {
 
 void loop() {
   int strings;
-  int xcord;
+  char xcord;
   int ycord;
   int hyph;
 
+  void updateFans(char,int);
   
   // put your main code here, to run repeatedly:
-  while (SerialUSB.available())
+  if (SerialUSB.available())
   {
-    delay(30);
-    if (SerialUSB.available() > 0){
       //read incoming string
-      xcord = SerialUSB.read();     //data in form XX-YY
+      xcord = SerialUSB.read();     
+      updateFans(xcord,1);   //update fan speeds
      /* if (SerialUSB.available() > 0)
       {
         ycord = SerialUSB.read();
       }*/
-      updateFans(xcord,1);   //update fan speeds
     }
-  }
+   
 }
 
-void updateFans(int x, int y) {
+
+void updateFans(char x, int y) {
   Serial.println(String(x) + " " + String(y));
 }
 
