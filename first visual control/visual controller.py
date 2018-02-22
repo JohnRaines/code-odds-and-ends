@@ -67,10 +67,13 @@ while(1):
             cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
 
     #serial write
-    PUSHER = (X * 65536)  + Y
-    PUSHER = int(PUSHER)
+    PUSHER = (X * 1000)  + Y
+    PUSHER = str(PUSHER)
+    PUSHER = format(PUSHER, "0>6")
+    
     #ser.write(1);
-    ser.write(str(X).encode())
+    ser.write(str(999).encode())
+    ser.write(PUSHER.encode())
     #ser.write(int(Y))
             
     #center display
