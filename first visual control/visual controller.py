@@ -14,7 +14,7 @@ import serial
 import numpy as np
 from collections import deque
 
-ser = serial.Serial("COM6", 9600) #set up serial communication
+ser = serial.Serial("COM4", 9600) #set up serial communication
 ser.write_timeout = 0
 s = [0]
 cap = cv2.VideoCapture(0)         #acquire video signal
@@ -41,6 +41,7 @@ while(1):
     #get frame and convert to hsv
     _, frame = cap.read()
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    hsv = cv2.GaussianBlur(hsv,(5,5),0)
 
     #adjust image saturation
     H,S,V = cv2.split(hsv)
@@ -67,6 +68,8 @@ while(1):
             cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
 
     #serial write
+    X = 640
+    Y = 480
     PUSHER = (X * 1000)  + Y
     PUSHER = str(PUSHER)
     PUSHER = format(PUSHER, "0>6")

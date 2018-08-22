@@ -26,20 +26,42 @@ void loop() {
   int ycord;
   int hyph;
 
-  strings = "";  
-  for(int i = 0; i < 9; i++){
+  strings = "999100100";  
+ /* for(int i = 0; i < 9; i++){
     if (SerialUSB.available()){
         //read incoming string
         strings += char(SerialUSB.read());     
     }
-  }
+  }*/
   updateFans(strings); 
 }
 
 
 void updateFans(String x) {
-  int xcord = x.substring(4,6).toInt();
-  int ycord = x.substring(7,8).toInt();
-  Serial.println(x + " " + String(xcord));
+  int xcord = x.substring(3,6).toInt();
+  int ycord = x.substring(6,9).toInt();
+  if (xcord == 0 && ycord == 0) return;        //return early if garbage packet
+  if (x.substring(0,3).toInt() != 999) return;
+  if (x.length() != 9) return;
+  double xgrad, ygrad;           //describe relative position
+  double apow, bpow, cpow, dpow; //percentages of full power
+  
+  Serial.println(x + " " + String(xcord) + " " +String(ycord));
+
+  xgrad = double(xcord) / double(XMAX);
+  ygrad = double(ycord) / double(YMAX);
+  dpow = ((xgrad) + (1 - ygrad)) / 2 * 255;
+  cpow = (xgrad + ygrad) / 2 * 255;
+  apow = ((1 - xgrad) + (1-ygrad)) / 2 * 255;
+  bpow = ((1 - xgrad) + ygrad) / 2 * 255;
+
+  //Serial.println(String(apow) + " " + String(dpow));
+  //Serial.println(String(bpow) + " " + String(cpow) + "\n");
+
+  //analogWrite(FANA,int(255));
+  //analogWrite(FANB,int(255));
+  analogWrite(FANC,int(193));
+  analogWrite(FAND,int(255));
+  
 }
 
