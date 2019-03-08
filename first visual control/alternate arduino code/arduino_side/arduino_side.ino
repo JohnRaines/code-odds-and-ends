@@ -8,7 +8,7 @@
 #define FAND 6
 #define XMAX 640    
 #define YMAX 80    
-#define low  
+#define low  255
 #define high 160
 
 
@@ -37,11 +37,11 @@ void loop() {
   analogWrite(FANA,int(low));
   analogWrite(FANC,int(low));
   analogWrite(FAND,int(low));
-  delay(3000);
-  analogWrite(FANA,int(high));
-  analogWrite(FANC,int(high));
-  analogWrite(FAND,int(high));
-  delay(1000);
+  //delay(3000);
+  //analogWrite(FANA,int(high));
+  //analogWrite(FANC,int(high));
+  //analogWrite(FAND,int(high));
+  //delay(1000);
 }
 
 
